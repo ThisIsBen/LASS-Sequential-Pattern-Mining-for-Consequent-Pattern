@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-
+'''
 _msg_monitors = """
 air monitors in Tainan City: (id)
 				airbox
@@ -22,7 +22,7 @@ air monitors in Tainan City: (id)
 								FT1_CCH01
 """
 
-
+'''
 
 from influxdb import InfluxDBClient
 
@@ -154,7 +154,7 @@ def Level2PM25No (predictLevel,candidatePM25Level={}):
 				return PM25PredictionValue
 
 
-def SPMPrediction(actualPM25DataList=[],SPMtempList=[]):
+def SPMPrediction(actualPM25DataList=[],SPMtempList=[],measurement="airbox",device_id="0"):
 				
 				
 			
@@ -162,8 +162,7 @@ def SPMPrediction(actualPM25DataList=[],SPMtempList=[]):
 				#prefixSpanCmd=raw_input( 'Please enter (frequent | top-k) <threshold>').split()
 
 				#get PM2.5 data from the selected airbox device
-				print(_msg_monitors)
-				measurement, device_id = raw_input('Input measurement and id: (seperated by space) ').split()
+				
 				print('measurement = {0}, device_id = {1}'.format(measurement, device_id))
 				print('') # new line
 
@@ -222,8 +221,7 @@ def SPMPrediction(actualPM25DataList=[],SPMtempList=[]):
 				for pastMinutes in range(predictionLengthInHour*60, 0, -5):
 
 					#clear db and PM25InNoList for next 5 mins prediction.
-					del db[:]
-					del PM25InNoList[:]
+					
 
 
 					#get the data from the past 1st to 24th hour of a cetain time for CPM adn baseline prediction.
@@ -298,7 +296,8 @@ def SPMPrediction(actualPM25DataList=[],SPMtempList=[]):
 					
 					patternLenDict = consequentPattern.pattern_mining(formatDB, element, min_support)
 					del patternLenDict[1] # remove  entry with key 'Length ==1' becuase it's meaningless for sequential pattern mining app
-					del patternLenDict[dataAmountPerTimeUnit+1]# remove  entry with key 'Length ==1' becuase it's meaningless for sequential pattern mining app
+					if(len(patternLenDict)>=dataAmountPerTimeUnit+2):
+						del patternLenDict[dataAmountPerTimeUnit+1]# remove  entry with key 'Length ==1' becuase it's meaningless for sequential pattern mining app
 					print(patternLenDict)
 					print (formatDB)
 					dataset_weight_applied=HillFunction.MultiplyHillFunWeight(patternLenDict)
@@ -374,8 +373,11 @@ def SPMPrediction(actualPM25DataList=[],SPMtempList=[]):
 					#print("The latest PM2.5 data in the 2nd hour from now = {}".format(PM25InNoList[1]))
 					#print("The latest PM2.5 data in the 1st hour from now = {}".format(PM25InNoList[0]))
 					
+					#clear these list for next use.
+					del db[:]
+					del PM25InNoList[:]
 				
-				return actualPM25DataList,SPMtempList,measurement,device_id
+				return actualPM25DataList,SPMtempList
 
 
 
