@@ -3,10 +3,11 @@
 # Input
 You should create two text files named "airboxDeviceID.txt" and "lassDeviceID.txt" in advance,which list all the PM2.5 Device ID line by line in it.
 e.g
-28C2DDDD479C
-28C2DDDD479F
-...
-
+```
+  28C2DDDD479C
+  28C2DDDD479F
+  ...
+```
 # Execution
 ```
   python SeqPattMin.py
