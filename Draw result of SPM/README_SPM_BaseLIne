@@ -1,0 +1,11 @@
+
+
+Execution
+   SPM_BaseLine [Folder Name]
+[Folder Name] is the folder that contains the csv files generated after executing SeqPattMin.py.
+
+Type the following in Matlab Command Window
+e.g., 
+```
+  SPM_BaseLine SPM
+```
