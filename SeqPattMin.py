@@ -58,6 +58,11 @@ def SeqPattMin_and_baseLine(measurement,device_id):
 		Generate actual PM25 data List
 		'''
 		actualPM25DataList,SPMtempList=SPM.SPMPrediction(actualPM25DataList,SPMtempList,measurement,device_id)
+		#if We currently can't get any data from this device of the past 24 hours on the date specified by programmer.
+		#just skip that device.
+		if (actualPM25DataList==-1):
+			print("We currently can't get any data from this device of the past 24 hours on the date specified by programmer. ")
+			return
 
 		#reverse actualPM25DataList to old-->new 
 		actualPM25DataList=actualPM25DataList[::-1]

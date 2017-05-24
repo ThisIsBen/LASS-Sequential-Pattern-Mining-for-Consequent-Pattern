@@ -109,7 +109,7 @@ def predictPM25Level(predictionRef=[],predictionCandidateDic={}):
 												predictionCandidateDic[patt[len(patt)-1]] = 0
 								predictionCandidateDic[patt[len(patt)-1]]=predictionCandidateDic[patt[len(patt)-1]]+probability
 				
-				print("predictionCandidateDic : {}".format(predictionCandidateDic))
+				#print("predictionCandidateDic : {}".format(predictionCandidateDic))
 
 
 				maxFreq=0
@@ -136,14 +136,18 @@ def Level2PM25No (predictLevel,candidatePM25Level={}):
 				for PM25Level, prob in candidatePM25Level.iteritems():
 				# return type: str
 					if(PM25Level!=predictLevel):
-						if(ord(PM25Level)-97-1>=0):
+
+
+						#suppose j means 100
+						if(PM25Level=='j'):
+							PM25PredictionValue+=100*prob*0.01
+							
+						elif(ord(PM25Level)-97-1>=0):
 							if(PM25Level>predictLevel):
 								PM25PredictionValue+=((_pm25_levels[ord(PM25Level)-97]+_pm25_levels[ord(PM25Level)-97-1])/2)*prob*0.01
 							else:
 								PM25PredictionValue-=((_pm25_levels[ord(PM25Level)-97]+_pm25_levels[ord(PM25Level)-97-1])/2)*prob*0.01
-						#suppose j means 100
-						elif(PM25Level=='j'):
-							PM25PredictionValue+=100*prob*0.01
+						
 						
 						#if it's 'a':(11+0)/2*prob
 						else:
@@ -267,9 +271,9 @@ def SPMPrediction(actualPM25DataList=[],SPMtempList=[],measurement="airbox",devi
 						
 
 					for i in range(0,len(db)):
-									print(" ")
-									print ("PM2.5 level in the {}th hour in the past".format(k))
-									print (db[retrievedHours-1])
+									#print(" ")
+									#print ("PM2.5 level in the {}th hour in the past".format(k))
+									#print (db[retrievedHours-1])
 									retrievedHours=retrievedHours-1
 									k=k-1
 									tempStr = ''.join(db[retrievedHours])
@@ -298,8 +302,8 @@ def SPMPrediction(actualPM25DataList=[],SPMtempList=[],measurement="airbox",devi
 					del patternLenDict[1] # remove  entry with key 'Length ==1' becuase it's meaningless for sequential pattern mining app
 					if(len(patternLenDict)>=dataAmountPerTimeUnit+2):
 						del patternLenDict[dataAmountPerTimeUnit+1]# remove  entry with key 'Length ==1' becuase it's meaningless for sequential pattern mining app
-					print(patternLenDict)
-					print (formatDB)
+					#print(patternLenDict)
+					#print (formatDB)
 					dataset_weight_applied=HillFunction.MultiplyHillFunWeight(patternLenDict)
 					#print ("dataset with weight applied={0}".format(dataset_weight_applied))
 					
@@ -313,14 +317,19 @@ def SPMPrediction(actualPM25DataList=[],SPMtempList=[],measurement="airbox",devi
 						sorted_dataset[lenCount]=sorted_set
 						lenCount=lenCount+1
 
-					print ("After sorting= {0}".format(sorted_dataset))
+					#print ("After sorting= {0}".format(sorted_dataset))
 
-					print (" ")#/n
+					#print (" ")#/n
 
 
 					
 					#get referech string from the most recent 12 PM2.5 data of the device.
 					lenFormatDB=len(formatDB)
+
+					#if We currently can't get any data from this device of the past 24 hours on the date specified by programmer.
+					#just skip this device
+					if(lenFormatDB==0):
+						return -1,-1
 					referenceString=formatDB[lenFormatDB-1]
 					i=2
 					while len(referenceString)<dataAmountPerTimeUnit:

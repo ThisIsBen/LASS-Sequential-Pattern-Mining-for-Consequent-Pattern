@@ -1,12 +1,10 @@
 import os
 
 
-def readDeviceIDFromFile(fname):
-    with open(fname) as f:
-        content = f.readlines()
-        # you may also want to remove whitespace characters like `\n` at the end of each line
-        content = [x.strip() for x in content] 
-    return content
+def readDeviceIDFromFile(filename):
+    with open(filename) as f_in:
+        lines = filter(None, (line.rstrip() for line in f_in))
+    return lines
 
 
 
