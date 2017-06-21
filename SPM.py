@@ -48,14 +48,19 @@ dataAmountPerTimeUnit=12
 pastHours=24
 predictionLengthInHour=1
 
-predictionDate="'2017-05-19'"
+'''
+predictionDate="'2017-05-19'" #8:00 in Taiwan, predict 7:00-8:00
+'''
+#predictionDate="'2017-05-04T10:00:00Z'" #18:00 in Taiwan, predict 17:00-18:00
+predictionDate="'2017-04-01T10:00:00Z'" #5/17 9:00 in Taiwan, predict 8:00-9:00
+
 '''
 #get the past 24 hours data from present
 predictionDate="now()"
 '''
 
 #min_support for Sequential Pattern Mining
-min_support = 2
+min_support = 4
 def query_interval_by_device_id(client, measurement='', device_id='', late_time='now()', duration='1h'):
 				# return type: Raw JSON from InfluxDB
 				#print(late_time)
@@ -127,7 +132,7 @@ def Level2PM25No (predictLevel,candidatePM25Level={}):
 
 				#set PM25 Prediction Value base
 				PM25PredictionValue=PM25InNoList[0][-1]
-				
+				print("PM25PredictionValue base={}".format(PM25PredictionValue))
 
 				
 					
@@ -200,9 +205,11 @@ def SPMPrediction(actualPM25DataList=[],SPMtempList=[],measurement="airbox",devi
 								except:
 												print('[debug] There may be no result in this query.')
 												print('[debug]   measurement = {0}, device_id = {1}, h = {2}'.format(measurement, device_id,h))
-				#copy the content of PM25InNoList
+				#copy the content of PM25InNoList to get the actual PM2.5 data of the chosen period of time.
 				actualPM25DataList=list(PM25InNoList)
-				
+
+				#clear the PM25InNoList for prediction use.
+				del PM25InNoList[:]
 				
 				'''
 				db = [
@@ -372,7 +379,7 @@ def SPMPrediction(actualPM25DataList=[],SPMtempList=[],measurement="airbox",devi
 					'''
 					predictionCandidateDic={}
 					predictLevel=predictPM25Level(sorted_candidatePredictionPattDict,predictionCandidateDic)
-					#print ("The prediction PM2.5 level in the next 5 mins is : {}".format(predictLevel))
+					print ("The prediction PM2.5 level in the next 5 mins is : {}".format(predictLevel))
 
 
 					predictLevelInNo=Level2PM25No (predictLevel,predictionCandidateDic)

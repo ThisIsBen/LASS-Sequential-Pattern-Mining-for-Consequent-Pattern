@@ -44,7 +44,9 @@ adjustable var
 '''
 dataAmountPerTimeUnit=12
 
+#skip the device that doesn't have sufficient PM2.5 data
 
+	
 
 def SeqPattMin_and_baseLine(measurement,device_id):
 		actualPM25DataList=[]
@@ -63,6 +65,7 @@ def SeqPattMin_and_baseLine(measurement,device_id):
 		if (actualPM25DataList==-1):
 			print("We currently can't get any data from this device of the past 24 hours on the date specified by programmer. ")
 			return
+			
 
 		#reverse actualPM25DataList to old-->new 
 		actualPM25DataList=actualPM25DataList[::-1]
@@ -84,6 +87,9 @@ def SeqPattMin_and_baseLine(measurement,device_id):
 		baseLinePredictionList=list(actualPM25DataList)
 		baseLinePredictionList.pop()
 		baseLinetempList=baseLine.getbaselinePrediction(actualPM25DataList,baseLinetempList)
+		if(baseLinetempList==-1):
+			print("We currently can't get any data from this device of the past 24 hours on the date specified by programmer. ")
+			return
 		baseLinePredictionList.append(baseLinetempList)
 		#print("in SeqPattMin SPMp {}".format(SPMPredictionList))
 		#print("in SeqPattMin base {}".format(baseLinePredictionList))
@@ -91,7 +97,14 @@ def SeqPattMin_and_baseLine(measurement,device_id):
 
 		#cal RMSE of SPM and baseLine prediction
 		SPM_RMSE,baseLine_RMSE=getRMSE(actualPM25DataList,SPMtempList,baseLinetempList)
-
+		'''
+		#adjust the first SPM prediction value to that of baseLine , if SPM_RMSE>baseLine_RMSE
+		if(SPM_RMSE>baseLine_RMSE):
+			SPMPredictionList[-1][0]=baseLinePredictionList[-1][0]
+		
+		#cal RMSE of SPM and baseLine prediction again after modify the first SPM prediction value to that of baseLine .
+		SPM_RMSE,baseLine_RMSE=getRMSE(actualPM25DataList,SPMtempList,baseLinetempList)
+		'''
 		RWFile.write2file(actualPM25DataList,SPMPredictionList,baseLinePredictionList,measurement,device_id,SPM_RMSE,baseLine_RMSE)
 		'''
 		del actualPM25DataList[:]
